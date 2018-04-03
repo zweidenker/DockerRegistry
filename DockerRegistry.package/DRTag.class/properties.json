@@ -1,0 +1,15 @@
+{
+	"commentStamp" : "",
+	"super" : "Object",
+	"category" : "DockerRegistry",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"repository",
+		"name",
+		"digest"
+	],
+	"name" : "DRTag",
+	"type" : "normal"
+}

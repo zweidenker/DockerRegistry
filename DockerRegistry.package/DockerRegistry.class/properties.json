@@ -1,0 +1,16 @@
+{
+	"commentStamp" : "",
+	"super" : "Object",
+	"category" : "DockerRegistry",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"url",
+		"username",
+		"password",
+		"repositories"
+	],
+	"name" : "DockerRegistry",
+	"type" : "normal"
+}
