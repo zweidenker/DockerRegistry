@@ -2,7 +2,9 @@
 	"commentStamp" : "",
 	"super" : "Object",
 	"category" : "DockerRegistry",
-	"classinstvars" : [ ],
+	"classinstvars" : [
+		"current"
+	],
 	"pools" : [ ],
 	"classvars" : [ ],
 	"instvars" : [

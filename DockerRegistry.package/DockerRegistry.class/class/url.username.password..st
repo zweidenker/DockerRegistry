@@ -1,6 +1,6 @@
 instance creation
 url: url username: username password: password
-	^ self new
+	^ self current
 		url: url;
 		username: username;
 		password: password
