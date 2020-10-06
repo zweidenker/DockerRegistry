@@ -6,7 +6,7 @@ Class {
 		'name',
 		'tags'
 	],
-	#category : 'DockerRegistry'
+	#category : #DockerRegistry
 }
 
 { #category : #'instance creation' }
@@ -54,6 +54,11 @@ DRRepository >> registry: anObject [
 { #category : #'as yet unclassified' }
 DRRepository >> repository: aDockerRegistry [ 
 	self shouldBeImplemented.
+]
+
+{ #category : #initialization }
+DRRepository >> reset [
+	tags := nil
 ]
 
 { #category : #accessing }

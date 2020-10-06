@@ -10,7 +10,7 @@ Class {
 	#classInstVars : [
 		'current'
 	],
-	#category : 'DockerRegistry'
+	#category : #DockerRegistry
 }
 
 { #category : #accessing }
@@ -29,13 +29,15 @@ DockerRegistry class >> url: url username: username password: password [
 
 { #category : #accessing }
 DockerRegistry >> buildRepositories [
-	^ repositories ifNil: [ 
-		repositories := self buildRepositories  ]
+	^ (self catalog at: 'repositories') collect: [ :each |
+		DRRepository new
+			registry: self;
+			name: each  ]
 ]
 
 { #category : #'as yet unclassified' }
 DockerRegistry >> catalog [
-	^ NeoJSONReader fromString: (self get: url / '_catalog')
+	^ NeoJSONReader fromString: (self get: url / '_catalog') 
 ]
 
 { #category : #public }
@@ -75,10 +77,8 @@ DockerRegistry >> password: aString [
 
 { #category : #accessing }
 DockerRegistry >> repositories [
-	^ (self catalog at: 'repositories') collect: [ :each |
-		DRRepository new
-			registry: self;
-			name: each  ]
+	^ repositories ifNil: [ 
+		repositories := self buildRepositories ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -86,6 +86,11 @@ DockerRegistry >> repositoryNamed: aString [
 	^ self repositories 
 		detect: [ :each | each name = aString ]
 		
+]
+
+{ #category : #resetting }
+DockerRegistry >> reset [
+	repositories := nil
 ]
 
 { #category : #'as yet unclassified' }
