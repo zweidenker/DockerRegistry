@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'registry',
 		'name',
-		'tags'
+		'tags',
+		'size'
 	],
 	#category : #DockerRegistry
 }
@@ -18,7 +19,8 @@ DRRepository class >> name: aString [
 { #category : #'as yet unclassified' }
 DRRepository >> buildTags [
 	| json |
-	json := NeoJSONReader fromString: (registry get: self url / #tags / #list).
+	[ json := NeoJSONReader fromString: (registry get: self url / #tags / #list) ]
+		on: Error do: [:err | ^ #() ].
 	^ (json at: 'tags') ifNotNil: [ :ts | 
 		ts collect: [ :tagString |
 			DRTag new
@@ -38,7 +40,9 @@ DRRepository >> name: anObject [
 
 { #category : #printing }
 DRRepository >> printOn: aStream [
-	aStream nextPutAll: name asString
+	aStream nextPutAll: name asString.
+	size ifNotNil: [ 
+		aStream << '(' << size asString << ')' ]
 ]
 
 { #category : #accessing }
@@ -61,10 +65,17 @@ DRRepository >> reset [
 	tags := nil
 ]
 
+{ #category : #printing }
+DRRepository >> size [
+	^ size ifNil: [ 
+		size := [self tags sum: #size]
+			on: Error do: [ :e | 0 ] ]
+]
+
 { #category : #accessing }
 DRRepository >> tags [
-	^ tags ifNil: [ 
-		tags := self buildTags ]
+	^ "tags ifNil: [ 
+		tags := "self buildTags "]"
 ]
 
 { #category : #'as yet unclassified' }

@@ -19,6 +19,11 @@ DockerRegistry class >> current [
 		current := self new ]
 ]
 
+{ #category : #initialization }
+DockerRegistry class >> reset [ 
+	current := nil
+]
+
 { #category : #'instance creation' }
 DockerRegistry class >> url: url username: username password: password [
 	^ self current
@@ -51,10 +56,15 @@ DockerRegistry >> delete: aUri [
 
 { #category : #'as yet unclassified' }
 DockerRegistry >> get: aUrl [ 
-	^ ZnClient new
+	| response |
+	response := ZnClient new
 		setBasicAuthenticationUsername: username password: password; 
 		url: aUrl ;
-		get
+		get;
+		response.
+	response isSuccess ifFalse: [ 
+		Error signal: 'no success' ].
+	^ response contents
 ]
 
 { #category : #'as yet unclassified' }

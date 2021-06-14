@@ -4,26 +4,49 @@ Class {
 	#instVars : [
 		'repository',
 		'name',
-		'digest'
+		'digest',
+		'size'
 	],
-	#category : 'DockerRegistry'
+	#category : #DockerRegistry
 }
+
+{ #category : #accessing }
+DRTag >> completeSize [ 
+	^ self manifest completeSize
+]
 
 { #category : #'submorphs-add/remove' }
 DRTag >> delete [
-	^ self registry
-		delete: self manifestUri 
+	^ [ self registry
+		delete: self manifestUri ]
+		on: Error do: [ :err | "ignore" ]
 ]
 
 { #category : #accessing }
 DRTag >> digest [
-	^ digest ifNil: [ 
-		digest := self resolveDigest ]
+	^ self manifest digest
+]
+
+{ #category : #accessing }
+DRTag >> fetchManifest [
+	| res |
+	res := self registry 
+		get: self manifestUri
+		headers: {  
+			'Accept' -> 'application/vnd.docker.distribution.manifest.v2+json' } asDictionary.
+	res isSuccess ifFalse: [ 
+		Error signal: 'no success' ].
+	^ DRManifest new initializeFromResponse: res
+]
+
+{ #category : #accessing }
+DRTag >> manifest [ 
+	^ self fetchManifest 
 ]
 
 { #category : #'as yet unclassified' }
 DRTag >> manifestUri [
-	^ repository url / #manifests / self digest 
+	^ repository url / #manifests / name 
 ]
 
 { #category : #accessing }
@@ -39,7 +62,9 @@ DRTag >> name: aString [
 { #category : #printing }
 DRTag >> printOn: aStream [
 	repository printOn: aStream.
-	aStream << '/' << name
+	aStream << '/' << name.
+	size ifNotNil: [ 
+		aStream << '(' << size asString << ')' ]
 ]
 
 { #category : #accessing }
@@ -61,13 +86,16 @@ DRTag >> repository: anObject [
 DRTag >> resolveDigest [
 	| res |
 	res := self registry 
-		get: self tagUri
+		get: self manifestUri
 		headers: {  
 			'Accept' -> 'application/vnd.docker.distribution.manifest.v2+json' } asDictionary.
+	res isSuccess ifFalse: [ 
+		Error signal: 'no success' ].
 	^ res headers at: 'Docker-Content-Digest'
 ]
 
-{ #category : #'as yet unclassified' }
-DRTag >> tagUri [
-	^ repository url / #manifests / name 
+{ #category : #accessing }
+DRTag >> size [ 
+	^ size ifNil: [ 
+		size := self completeSize ]
 ]
